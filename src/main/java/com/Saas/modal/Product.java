@@ -9,37 +9,41 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
-public class Store {
+@NoArgsConstructor
+@Builder
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(nullable = false)
-    private String brand;
+    private String name;
 
-    @OneToOne
-    private User storeAdmin;
-
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    @Column(nullable = false, unique = true)
+    private String sku;
 
     private String description;
 
-    private String storeType;
+    private Double mrp;
 
-    private StoreStatus status;
+    private Double sellingPrice;
+    private String brand;
+    private String image;
 
-    @Embedded
-    private StoreContact contact = new StoreContact();
+    //private Category category;
+
+    @ManyToOne
+    private Store store;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate(){
         createdAt = LocalDateTime.now();
-        status = StoreStatus.PENDING;
     }
 
     @PreUpdate
