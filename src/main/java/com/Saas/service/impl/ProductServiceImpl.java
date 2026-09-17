@@ -1,14 +1,17 @@
 package com.Saas.service.impl;
 
 import com.Saas.mapper.ProductMapper;
+import com.Saas.modal.Category;
 import com.Saas.modal.Product;
 import com.Saas.modal.Store;
 import com.Saas.modal.User;
 import com.Saas.payload.dto.ProductDTO;
+import com.Saas.repository.CategoryRepository;
 import com.Saas.repository.ProductRepository;
 import com.Saas.repository.StoreRepository;
 import com.Saas.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -22,6 +25,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public ProductDTO createProduct(ProductDTO productDTO, User user) throws Exception {
@@ -31,7 +35,11 @@ public class ProductServiceImpl implements ProductService {
                 () -> new Exception("Store not found")
         );
 
-        Product product = ProductMapper.toEntity(productDTO, store);
+        Category category = categoryRepository.findById(productDTO.getCategoryId()).orElseThrow(
+                () -> new Exception("Category not found")
+        );
+
+        Product product = ProductMapper.toEntity(productDTO, store, category);
         Product savedProduct = productRepository.save(product);
 
         return ProductMapper.toDTO(savedProduct);
@@ -52,6 +60,13 @@ public class ProductServiceImpl implements ProductService {
         product.setBrand(productDTO.getBrand());
         product.setUpdatedAt(LocalDateTime.now());
         Product savedProduct = productRepository.save(product);
+
+        if(productDTO.getCategoryId()!=null){
+            Category category = categoryRepository.findById(productDTO.getCategoryId()).orElseThrow(
+                    () -> new Exception("category not found")
+            );
+            product.setCategory(category);
+        }
 
         return ProductMapper.toDTO(savedProduct);
     }

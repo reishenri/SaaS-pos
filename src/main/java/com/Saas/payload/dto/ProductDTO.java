@@ -1,5 +1,6 @@
 package com.Saas.payload.dto;
 
+import com.Saas.modal.Category;
 import jdk.jshell.Snippet;
 import lombok.Builder;
 import lombok.Data;
@@ -24,7 +25,7 @@ public class ProductDTO {
     private String brand;
     private String image;
 
-    //private Category category;
+    private Category category;
 
     private Long categoryId;
 
